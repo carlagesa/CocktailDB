@@ -1,4 +1,4 @@
-# from django_filters.rest_framework import DjangoFilterBackend
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
 from cocktail.models import Cocktail
 from cocktail.serializers import CocktailSerializer
@@ -8,7 +8,12 @@ class CocktailList(generics.ListCreateAPIView):
     serializer_class = CocktailSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['drink', 'category','Ingredient1']
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = {
+        'alcoholic': ['exact'],
+        'category': ['exact'],
+        'glass': ['exact'],
+    }
 
 class CocktailDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cocktail.objects.all()
