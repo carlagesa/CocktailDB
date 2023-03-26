@@ -33,7 +33,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 CORS_ORIGIN_WHITELIST = [
-    'https:////cocktaildb.up.railway.app/',
+    'https:////cocktaildb.up.railway.app',
     'http://localhost:3000',
 ]
 # Application definition
