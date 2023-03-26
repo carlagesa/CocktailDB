@@ -1,5 +1,5 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from cocktail.models import Cocktail
 from cocktail.serializers import CocktailSerializer
 from drf_yasg import openapi
@@ -10,14 +10,14 @@ class CocktailList(generics.ListCreateAPIView):
     queryset = Cocktail.objects.all()
     serializer_class = CocktailSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['drink', 'category', 'Ingredient1']
+    search_fields = ['^drink', 'category', 'Ingredient1']
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'alcoholic': ['exact'],
         'category': ['exact'],
         'glass': ['exact'],
     }
-
+# Swagger settings for displaying the following params
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
@@ -42,6 +42,8 @@ class CocktailList(generics.ListCreateAPIView):
     )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+# End of swagger settings
+
 
 class CocktailDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cocktail.objects.all()
