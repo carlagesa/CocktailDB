@@ -27,8 +27,7 @@ DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
 
-ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
-
+# ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 # Application definition
 
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'cocktail',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +135,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+    'DEFAULT_MODEL_DEPTH':-1
+}
