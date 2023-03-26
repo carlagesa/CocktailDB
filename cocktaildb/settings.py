@@ -27,7 +27,7 @@ DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
 
-ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
+# ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 # Application definition
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'cocktail',
     'drf_yasg',
