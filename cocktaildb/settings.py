@@ -27,7 +27,7 @@ DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
 
-# ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
+ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 # Application definition
 
