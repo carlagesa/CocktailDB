@@ -7,9 +7,8 @@ from cocktail.serializers import CocktailSerializer
 class CocktailList(generics.ListCreateAPIView):
     queryset = Cocktail.objects.all()
     serializer_class = CocktailSerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['^drink', 'category', 'Ingredient1']
-    filter_backends = [DjangoFilterBackend]
     filterset_fields = {
         'alcoholic': ['exact'],
         'category': ['exact'],
