@@ -3,7 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from cocktail.models import Cocktail
 from cocktail.serializers import CocktailSerializer
 
-
 class CocktailList(generics.ListCreateAPIView):
     queryset = Cocktail.objects.all()
     serializer_class = CocktailSerializer
