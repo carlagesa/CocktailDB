@@ -30,7 +30,7 @@ CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
 CORS_ALLOWED_ORIGINS = ['https://cocktaildb.up.railway.app']
 # CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
+# ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 CORS_ORIGIN_WHITELIST = [
     'https://cocktaildb.up.railway.app',
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
+    # 'corsheaders',
     'django_filters',
     'rest_framework',
     'cocktail',
@@ -52,9 +52,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
