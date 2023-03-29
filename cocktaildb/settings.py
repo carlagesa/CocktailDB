@@ -31,7 +31,7 @@ CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
 CORS_ALLOWED_ORIGINS = ['https://cocktaildb.up.railway.app']
 # CORS_ORIGIN_ALLOW_ALL = True
 
-# ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
+ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
 
 CORS_ORIGIN_WHITELIST = [
     'https://cocktaildb.up.railway.app',
