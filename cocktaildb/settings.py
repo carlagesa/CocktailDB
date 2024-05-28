@@ -26,16 +26,11 @@ SECRET_KEY = 'django-insecure-5&p!sl4e)ah2e0adj@w-_fdxu7y*mmd(*bv$mdv#p_(mxdes2a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-CSRF_TRUSTED_ORIGINS = ['https://cocktaildb.up.railway.app']
-
-CORS_ALLOWED_ORIGINS = ['https://cocktaildb.up.railway.app']
 # CORS_ORIGIN_ALLOW_ALL = True
 
-ALLOWED_HOSTS = ['cocktaildb.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
-CORS_ORIGIN_WHITELIST = [
-    'https://cocktaildb.up.railway.app',
-]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -80,27 +75,24 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'cocktaildb.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'JiN1xeL9Uy2AoNBY5DP0',
-        'HOST': 'containers-us-west-32.railway.app',
-        'PORT': '5760',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'railway',
+#         'USER': 'postgres',
+#         'PASSWORD': 'JiN1xeL9Uy2AoNBY5DP0',
+#         'HOST': 'containers-us-west-32.railway.app',
+#         'PORT': '5760',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
