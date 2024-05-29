@@ -15,9 +15,9 @@ class Command(BaseCommand):
         wb = openpyxl.load_workbook('data/cocktails.xlsx')
         ws = wb.active
 
-        # Create a folder to store the cocktail images
-        os.makedirs('cocktail_images', exist_ok=True)
-
+        # Get the media root directory from settings
+        media_root = os.path.join(os.getcwd(), 'media')
+        
         for row in ws.iter_rows(min_row=2):
             drink = row[0].value
             DrinkAlternate = row[1].value
