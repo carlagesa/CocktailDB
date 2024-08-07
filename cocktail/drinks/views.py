@@ -1,80 +1,108 @@
+import requests
 from rest_framework.views import APIView
-from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import Drink
-from .serializers import DrinkSerializer
 from rest_framework.decorators import api_view
-import random
 
-class DrinkListView(generics.ListCreateAPIView):
-    queryset = Drink.objects.all()
-    serializer_class = DrinkSerializer
-    permission_classes = [permissions.IsAuthenticated]
+API_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/"
 
-class DrinkDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Drink.objects.all()
-    serializer_class = DrinkSerializer
-    permission_classes = [permissions.IsAuthenticated]
+def fetch_from_api(endpoint):
+    url = f"{API_BASE_URL}{endpoint}"
+    response = requests.get(url)
+    return response.json()
 
-class DrinkSearchByNameView(generics.ListAPIView):
-    queryset = Drink.objects.all()
-    serializer_class = DrinkSerializer
-    filter_backends = [SearchFilter]
-    search_fields = ['name']
+class SearchCocktailByName(APIView):
+    def get(self, request):
+        name = request.GET.get('s')
+        if not name:
+            return Response({'detail': 'Name parameter is required'}, status=400)
+        data = fetch_from_api(f"search.php?s={name}")
+        return Response(data)
 
-@api_view(['GET'])
-def search_by_ingredient(request):
-    ingredient = request.GET.get('ingredient')
-    if not ingredient:
-        return Response({'detail': 'Ingredient parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
-    drinks = Drink.objects.filter(ingredients__icontains=ingredient)
-    serializer = DrinkSerializer(drinks, many=True)
-    return Response(serializer.data)
+class ListCocktailsByFirstLetter(APIView):
+    def get(self, request):
+        letter = request.GET.get('f')
+        if not letter:
+            return Response({'detail': 'First letter parameter is required'}, status=400)
+        data = fetch_from_api(f"search.php?f={letter}")
+        return Response(data)
 
-class DrinkFilterView(APIView):
-    def get(self, request, *args, **kwargs):
-        category = request.query_params.get('category')
-        glass = request.query_params.get('glass')
-        alcoholic = request.query_params.get('alcoholic')
+class SearchIngredientByName(APIView):
+    def get(self, request):
+        ingredient = request.GET.get('i')
+        if not ingredient:
+            return Response({'detail': 'Ingredient name parameter is required'}, status=400)
+        data = fetch_from_api(f"search.php?i={ingredient}")
+        return Response(data)
 
-        filters = {}
-        if category:
-            filters['category'] = category
-        if glass:
-            filters['glass'] = glass
-        if alcoholic:
-            filters['alcoholic'] = alcoholic
+class LookupCocktailById(APIView):
+    def get(self, request):
+        cocktail_id = request.GET.get('i')
+        if not cocktail_id:
+            return Response({'detail': 'Cocktail ID parameter is required'}, status=400)
+        data = fetch_from_api(f"lookup.php?i={cocktail_id}")
+        return Response(data)
 
-        drinks = Drink.objects.filter(**filters)
-        serializer = DrinkSerializer(drinks, many=True)
-        return Response(serializer.data)
-import logging
+class LookupIngredientById(APIView):
+    def get(self, request):
+        ingredient_id = request.GET.get('iid')
+        if not ingredient_id:
+            return Response({'detail': 'Ingredient ID parameter is required'}, status=400)
+        data = fetch_from_api(f"lookup.php?iid={ingredient_id}")
+        return Response(data)
 
-logger = logging.getLogger(__name__)
+class LookupRandomCocktail(APIView):
+    def get(self, request):
+        data = fetch_from_api("random.php")
+        return Response(data)
 
-class RandomDrinkView(APIView):
-    def get(self, request, *args, **kwargs):
-        count = Drink.objects.count()
-        if count == 0:
-            logger.debug("No drinks available in the database.")
-            return Response({'detail': 'No drinks available'}, status=status.HTTP_404_NOT_FOUND)
-        
-        random_index = random.randint(0, count - 1)
-        logger.debug(f"Random index generated: {random_index}")
-        
-        try:
-            drink = Drink.objects.all()[random_index]
-            serializer = DrinkSerializer(drink)
-            return Response(serializer.data)
-        except Drink.DoesNotExist:
-            logger.error("Drink not found even though count was non-zero.")
-            return Response({'detail': 'No drinks available'}, status=status.HTTP_404_NOT_FOUND)
-        except IndexError:
-            logger.error("IndexError: Random index out of range.")
-            return Response({'detail': 'Random index out of range'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
-class LatestDrinksView(generics.ListAPIView):
-    queryset = Drink.objects.order_by('-id')[:10]
-    serializer_class = DrinkSerializer
+class FilterByIngredient(APIView):
+    def get(self, request):
+        ingredient = request.GET.get('i')
+        if not ingredient:
+            return Response({'detail': 'Ingredient parameter is required'}, status=400)
+        data = fetch_from_api(f"filter.php?i={ingredient}")
+        return Response(data)
+
+class FilterByAlcoholic(APIView):
+    def get(self, request):
+        alcoholic = request.GET.get('a')
+        if not alcoholic:
+            return Response({'detail': 'Alcoholic parameter is required'}, status=400)
+        data = fetch_from_api(f"filter.php?a={alcoholic}")
+        return Response(data)
+
+class FilterByCategory(APIView):
+    def get(self, request):
+        category = request.GET.get('c')
+        if not category:
+            return Response({'detail': 'Category parameter is required'}, status=400)
+        data = fetch_from_api(f"filter.php?c={category}")
+        return Response(data)
+
+class FilterByGlass(APIView):
+    def get(self, request):
+        glass = request.GET.get('g')
+        if not glass:
+            return Response({'detail': 'Glass parameter is required'}, status=400)
+        data = fetch_from_api(f"filter.php?g={glass}")
+        return Response(data)
+
+class ListCategories(APIView):
+    def get(self, request):
+        data = fetch_from_api("list.php?c=list")
+        return Response(data)
+
+class ListGlasses(APIView):
+    def get(self, request):
+        data = fetch_from_api("list.php?g=list")
+        return Response(data)
+
+class ListIngredients(APIView):
+    def get(self, request):
+        data = fetch_from_api("list.php?i=list")
+        return Response(data)
+
+class ListAlcoholicFilters(APIView):
+    def get(self, request):
+        data = fetch_from_api("list.php?a=list")
+        return Response(data)
