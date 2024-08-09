@@ -11,7 +11,7 @@ Welcome to **CocktailDB**, a Django-based API providing a collection of free, op
 Explore the API documentation and test endpoints interactively using the following platforms:
 
 - [Swagger](https://cocktaildb-one.vercel.app/) - Interactive API documentation.
-- [Postman](https://www.postman.com) - Import our Postman collection to test endpoints.
+- [Postman](https://documenter.getpostman.com/view/21460726/2sA3s3GW7A) - Import our Postman collection to test endpoints.
 - [Insomnia](https://insomnia.rest) - Use our Insomnia workspace for efficient API testing.
 
 ## 🛠️ Features

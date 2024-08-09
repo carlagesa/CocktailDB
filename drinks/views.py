@@ -1,5 +1,7 @@
 import requests
 from rest_framework import generics
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Drink
@@ -80,6 +82,9 @@ class FilterByAlcoholic(APIView):
         return Response(data)
 
 class FilterByCategory(APIView):
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter('category', openapi.IN_QUERY, description="Category parameter", type=openapi.TYPE_STRING, required=True)
+    ])
     def get(self, request):
         category = request.GET.get('c')
         if not category:
