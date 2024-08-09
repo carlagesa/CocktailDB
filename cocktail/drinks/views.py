@@ -1,7 +1,9 @@
 import requests
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from .models import Drink
+from .serializers import DrinkSerializer
 
 API_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/"
 
@@ -10,6 +12,12 @@ def fetch_from_api(endpoint):
     response = requests.get(url)
     return response.json()
 
+class CocktailOnlyListView(APIView):
+    def get(self, request):
+        cocktails = Drink.objects.all()
+        serializer = DrinkSerializer(cocktails, many=True)
+        return Response(serializer.data)
+    
 class SearchCocktailByName(APIView):
     def get(self, request):
         name = request.GET.get('s')

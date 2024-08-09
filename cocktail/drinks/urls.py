@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    CocktailOnlyListView,
     SearchCocktailByName,
     ListCocktailsByFirstLetter,
     SearchIngredientByName,
@@ -17,6 +18,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path('cocktails-only/', CocktailOnlyListView.as_view(), name='cocktails-only-list'),
     path('search/cocktail/', SearchCocktailByName.as_view(), name='search-cocktail-by-name'),
     path('search/letter/', ListCocktailsByFirstLetter.as_view(), name='list-cocktails-by-first-letter'),
     path('search/ingredient/', SearchIngredientByName.as_view(), name='search-ingredient-by-name'),
