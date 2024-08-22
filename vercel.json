@@ -1,13 +1,13 @@
 {
     "builds": [{
-        "src": "cocktaildb/wsgi.py",
+        "src": "cocktail/wsgi.py",
         "use": "@vercel/python",
         "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
     }],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "cocktaildb/wsgi.py"
+            "dest": "cocktail/wsgi.py"
         }
     ]
 }
