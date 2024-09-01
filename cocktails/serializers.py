@@ -4,11 +4,11 @@ from .models import Cocktail, Ingredient
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ['id', 'name', 'description']
 
 class CocktailSerializer(serializers.ModelSerializer):
-    ingredients = IngredientSerializer(many=True, read_only=True)
+    ingredients = IngredientSerializer(many=True)  # Serialize ingredients as a list
 
     class Meta:
         model = Cocktail
-        fields = '__all__'
+        fields = ['id', 'name', 'category', 'glass_type', 'alcoholic', 'instructions', 'ingredients', 'image']
