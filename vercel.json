@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "cocktaildb/wsgi.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "pythonVersion": "3.8"
+      }
     },
     {
       "src": "staticfiles/**/*",
