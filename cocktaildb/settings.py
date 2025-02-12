@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS =  ["127.0.0.1", ".vercel.app"]
+ALLOWED_HOSTS =  ["127.0.0.1", ".vercel.app", "cocktaildb-api-env-1.eba-mtkvs74p.us-east-1.elasticbeanstalk.com",]
 
 
 
