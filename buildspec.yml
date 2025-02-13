@@ -3,13 +3,20 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo Installing dependencies...
+      - echo "Installing dependencies..."
       - pip install -r requirements.txt
+
   build:
     commands:
-      - echo Build started on `date`
+      - echo "Build started on $(date)"
       - python manage.py collectstatic --noinput
       - zip -r django-app.zip * .[^.]*
+
+  post_build:
+    commands:
+      - echo "Running Django migrations..."
+      - python manage.py migrate
+
 artifacts:
   files:
     - django-app.zip
