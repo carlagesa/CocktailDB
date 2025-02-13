@@ -14,3 +14,4 @@ sqlparse==0.5.3
 tzdata==2025.1
 uritemplate==4.1.1
 whitenoise==6.9.0
+dj-database-url==2.1.0
