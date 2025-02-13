@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo Build started on `date`
+      - python manage.py collectstatic --noinput
+      - zip -r django-app.zip * .[^.]*
+artifacts:
+  files:
+    - django-app.zip
+  discard-paths: yes
