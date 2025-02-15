@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -116,11 +115,11 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('cocktaildb1.c5q466qeuqj7.us-west-2.rds.amazonaws.com'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'NAME': 'cocktaildb',
+        'USER': 'mastercocktaildb',
+        'PASSWORD': 'Cocktail003',
+        'HOST': 'cocktaildb1.c5q466qeuqj7.us-west-2.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
