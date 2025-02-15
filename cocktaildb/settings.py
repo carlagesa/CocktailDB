@@ -118,7 +118,7 @@ DATABASES = {
         'NAME': 'cocktaildb',
         'USER': 'mastercocktaildb',
         'PASSWORD': 'Cocktail003',
-        'HOST': 'cocktaildb1.c5q466qeuqj7.us-west-2.rds.amazonaws.com',
+        'HOST': 'DB_HOST',
         'PORT': '5432',
     }
 }
