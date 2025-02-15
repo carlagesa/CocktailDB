@@ -114,12 +114,12 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cocktaildb',
-        'USER': 'postgre',
-        'PASSWORD': 'Cocktail254',
-        'HOST': 'database-1.cbw8mo4ey7y5.eu-west-2.rds.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',  # Change to 'django.db.backends.mysql' if using MySQL
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
     }
 }
 
