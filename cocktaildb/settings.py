@@ -116,9 +116,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'cocktaildb',
-        'USER': 'mastercocktaildb',
-        'PASSWORD': 'Cocktail003',
-        'HOST': 'DB_HOST',
+        'USER': 'postgre',
+        'PASSWORD': 'Cocktail254',
+        'HOST': 'database-1.cbw8mo4ey7y5.eu-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
