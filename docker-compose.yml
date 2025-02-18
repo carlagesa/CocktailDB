@@ -1,0 +1,14 @@
+version: '3.11'
+
+services:
+  web:
+    build: .
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    # environment:
+    #   - DATABASE_URL=postgres://user:password@external-db-url:5432/cocktaildb
+    #   - DJANGO_SETTINGS_MODULE=cocktaildb.settings.production
+    depends_on: []
