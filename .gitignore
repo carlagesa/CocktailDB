@@ -1,6 +1,6 @@
-
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-COCKTAIL-KP.pem
+__pycache__
+*.pyc
+*.pyo
+.env
+*.git
+db.sqlite3
