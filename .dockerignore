@@ -3,4 +3,3 @@ __pycache__
 *.pyo
 .env
 *.git
-db.sqlite3
