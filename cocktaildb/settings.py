@@ -111,7 +111,7 @@ DATABASES = {
         'NAME': os.environ.get("DB_NAME"),
         'USER': os.environ.get("DB_USER"),
         'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("ep-falling-wildflower-a4im662j-pooler.us-east-1.aws.neon.tech"),
+        'HOST': os.environ.get("DB_HOST"),
         'PORT': '5432',
     }
 }
