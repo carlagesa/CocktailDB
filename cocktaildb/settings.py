@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -103,13 +104,24 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'cocktaildb',
+#         'USER': 'masteradmin',
+#         'PASSWORD': 'ht94vxTA32',
+#         'HOST': 'database-1.cbw8mo4ey7y5.eu-west-2.rds.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cocktaildb',
-        'USER': 'masteradmin',
-        'PASSWORD': 'ht94vxTA32',
-        'HOST': 'database-1.cbw8mo4ey7y5.eu-west-2.rds.amazonaws.com',
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
         'PORT': '5432',
     }
 }
