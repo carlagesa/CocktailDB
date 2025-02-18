@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ['docker-env.eba-df3dpndr.eu-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS =  ['docker-env.eba-df3dpndr.eu-west-2.elasticbeanstalk.com', '127.0.0.1']
 
 # Application definition
 
@@ -106,10 +106,10 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),
+        'NAME': 'cocktaildb',
+        'USER': 'masteradmin',
+        'PASSWORD': 'ht94vxTA32',
+        'HOST': 'database-1.cbw8mo4ey7y5.eu-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
