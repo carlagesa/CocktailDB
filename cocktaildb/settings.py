@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS =  ['docker-env.eba-df3dpndr.eu-west-2.elasticbeanstalk.com']
 
-
-
 # Application definition
 
 INSTALLED_APPS = [
