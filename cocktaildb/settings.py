@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ['docker-env.eba-df3dpndr.eu-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS =  ['docker-env.eba-df3dpndr.eu-west-2.elasticbeanstalk.com', '127.0.0.1']
 
 # Application definition
 
@@ -102,6 +103,7 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
 
 DATABASES = {
     'default': {

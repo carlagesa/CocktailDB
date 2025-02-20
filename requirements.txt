@@ -10,6 +10,7 @@ inflection==0.5.1
 packaging==24.2
 psycopg2-binary==2.9.10
 PyJWT==2.10.1
+python-dotenv==1.0.1
 pytz==2025.1
 PyYAML==6.0.2
 sqlparse==0.5.3
