@@ -7,3 +7,7 @@ __pycache__
 /media/
 /staticfiles/
 db.sqlite3
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
