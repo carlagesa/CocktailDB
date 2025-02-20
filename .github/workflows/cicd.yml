@@ -10,36 +10,53 @@ on:
 
 jobs:
   build:
-    name: Run Tests & Linting
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run Tests
+        env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DEBUG: ${{ secrets.DEBUG }}
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          pytest  # Or your test command
-
+          python manage.py test
+          
   deploy:
-    name: Deploy API
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy to Production
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker Image
         run: |
-          echo "Deploying API..."
-          # Add deployment script here (Vercel, AWS, etc.)
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/cocktaildb:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/cocktaildb:latest
+
+      - name: Deploy to Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          eb init cocktaildb --region eu-west-2 --platform "Docker running on 64bit Amazon Linux"
+          eb deploy
