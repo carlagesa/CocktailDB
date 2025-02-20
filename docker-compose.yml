@@ -1,5 +1,3 @@
-version: '3.11'
-
 services:
   web:
     build: .
@@ -8,7 +6,6 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    # environment:
-    #   - DATABASE_URL=postgres://user:password@external-db-url:5432/cocktaildb
-    #   - DJANGO_SETTINGS_MODULE=cocktaildb.settings.production
-    depends_on: []
+    env_file:
+      - .env  # Loads environment variables from .env file
+    depends_on: [] # left empty since we're using an external AWS RDS database
