@@ -61,6 +61,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: CocktailDB # <--- This should be your Elastic Beanstalk Application Name
           environment_name: CocktailDB-dev # <--- This should be your Elastic Beanstalk Environment Name
+          version_label: django-app-${{ github.sha }}-${{ github.run_id }}
           region: us-west-2 # Use the region you've defined
           version_label: "cocktaildb-app-${{ github.sha }}-${{ steps.current-time.outputs.formattedTime }}" # Unique version label
           deployment_package: deploy.zip # The ZIP file you created earlier
