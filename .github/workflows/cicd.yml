@@ -3,7 +3,7 @@ name: CI/CD for CocktailDB
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -11,32 +11,60 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Use v4 for checkout for latest features/fixes
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Use v5 for setup-python for latest features/fixes
         with:
           python-version: "3.11"
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip # Ensure pip is up-to-date
           pip install -r requirements.txt
+          # If your Django app needs psycopg2 or other packages, ensure they are in requirements.txt
 
-      - name: Install Elastic Beanstalk CLI
-        run: |
-          pip install awsebcli --upgrade  # Ensures EB CLI is available
+      # Optional: Remove the direct EB CLI installation if you only plan to use the action
+      # - name: Install Elastic Beanstalk CLI
+      #   run: |
+      #     pip install awsebcli --upgrade
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      # Optional: The beanstalk-deploy action handles AWS credentials internally
+      # You can keep configure-aws-credentials if other steps in your workflow need it,
+      # but for just the beanstalk-deploy action, it's not strictly necessary.
+      - name: Configure AWS credentials # Keep this for general AWS CLI usage if needed
+        uses: aws-actions/configure-aws-credentials@v4 # Use v4 for configure-aws-credentials
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
-      - name: Initialize Elastic Beanstalk
+      # --- NEW / MODIFIED DEPLOYMENT STEPS ---
+
+      - name: Get current timestamp
+        id: current-time
+        uses: gerred/actions/current-time@master
+        with:
+          format: "YYYY-MM-DD-HH-mm-ss" # Generates a unique timestamp for the version label
+
+      - name: Generate deployment package
         run: |
-          eb init CocktailDB-dev --region us-west-2 --platform "Docker running on 64bit Amazon Linux 2"
+          # Create the ZIP file that Elastic Beanstalk will deploy
+          # Ensure .ebextensions/ and your Django project files are included.
+          zip -r deploy.zip . -x "*.git*" "node_modules/*" "*.github*" # Exclude unnecessary files/folders
+          ls -l deploy.zip # Verify the zip file is created
 
       - name: Deploy to Elastic Beanstalk
-        run: |
-          eb deploy CocktailDB-dev
+        uses: einaregilsson/beanstalk-deploy@v22 # This is the action that handles the deployment
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: CocktailDB # <--- This should be your Elastic Beanstalk Application Name
+          environment_name: CocktailDB-dev # <--- This should be your Elastic Beanstalk Environment Name
+          region: us-west-2 # Use the region you've defined
+          version_label: "cocktaildb-app-${{ github.sha }}-${{ steps.current-time.outputs.formattedTime }}" # Unique version label
+          deployment_package: deploy.zip # The ZIP file you created earlier
+          wait_for_deployment: true # Important: waits for the deployment to finish
+          # Optional: You can specify platform (e.g., '64bit Amazon Linux 2') if needed,
+          # but typically if the environment already exists, it's not required here.
+          # platform_arn: arn:aws:elasticbeanstalk:us-west-2::platform/Docker running on 64bit Amazon Linux 2/3.0.0
