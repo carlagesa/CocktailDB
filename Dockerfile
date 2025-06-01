@@ -18,8 +18,8 @@ COPY . /cocktail-app/
 EXPOSE 8000
 
 # Run the application (adjust to how you start your Django app)
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 #Adjusting for Production!
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"] 
 
