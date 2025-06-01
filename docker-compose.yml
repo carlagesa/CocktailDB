@@ -1,11 +1,20 @@
 services:
   web:
     build: .
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    # THIS IS THE CRITICAL CHANGE:
+    # Replace the runserver command with the Gunicorn command
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"]
+    # Make sure 'cocktaildb' matches your actual Django project name (the folder containing wsgi.py)
+
     volumes:
-      - .:/app
+      - .:/app # This volume mount is typically for local development.
+                # For Elastic Beanstalk, the code is copied into the image,
+                # so this line might not be necessary or even desirable in production.
+                
     ports:
       - "8000:8000"
     env_file:
-      - .env  # Loads environment variables from .env file
-    depends_on: [] # left empty since we're using an external AWS RDS database
+      - .env # This loads local .env. For Elastic Beanstalk, environment variables
+             # should be set in the EB console (as discussed) or Dockerrun.aws.json.
+             # This line is for local development, and usually ignored by EB.
+    depends_on: [] # Correct for external RDS
