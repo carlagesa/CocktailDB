@@ -62,7 +62,7 @@ jobs:
           application_name: CocktailDB # <--- This should be your Elastic Beanstalk Application Name
           environment_name: cocktail-env # <--- This should be your Elastic Beanstalk Environment Name
           region: us-west-2 # Use the region you've defined
-          version_label: "cocktaildb-app-${{ github.sha }}-${{ steps.current-time.outputs.formattedTime }}" # Unique version label
+          version_label: "cocktaildb-env-${{ github.sha }}-${{ steps.current-time.outputs.formattedTime }}" # Unique version label
           deployment_package: deploy.zip # The ZIP file you created earlier
           wait_for_deployment: true # Important: waits for the deployment to finish
           # Optional: You can specify platform (e.g., '64bit Amazon Linux 2') if needed,
