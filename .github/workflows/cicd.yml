@@ -24,21 +24,6 @@ jobs:
           pip install -r requirements.txt
           # If your Django app needs psycopg2 or other packages, ensure they are in requirements.txt
 
-      # Optional: Remove the direct EB CLI installation if you only plan to use the action
-      # - name: Install Elastic Beanstalk CLI
-      #   run: |
-      #     pip install awsebcli --upgrade
-
-      # Optional: The beanstalk-deploy action handles AWS credentials internally
-      # You can keep configure-aws-credentials if other steps in your workflow need it,
-      # but for just the beanstalk-deploy action, it's not strictly necessary.
-      - name: Configure AWS credentials # Keep this for general AWS CLI usage if needed
-        uses: aws-actions/configure-aws-credentials@v4 # Use v4 for configure-aws-credentials
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-2
-
       # --- NEW / MODIFIED DEPLOYMENT STEPS ---
 
       - name: Get current timestamp
