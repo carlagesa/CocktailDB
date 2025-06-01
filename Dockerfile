@@ -8,7 +8,8 @@ WORKDIR /cocktail-app
 COPY requirements.txt /cocktail-app/
 
 # Install the dependencies from the requirements file
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 # Copy the entire project into the container
 COPY . /cocktail-app/
@@ -17,8 +18,8 @@ COPY . /cocktail-app/
 EXPOSE 8000
 
 # Run the application (adjust to how you start your Django app)
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
 #Adjusting for Production!
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"] 
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"] 
 
