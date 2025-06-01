@@ -31,11 +31,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2
+          aws-region: us-west-2
 
       - name: Initialize Elastic Beanstalk
         run: |
-          eb init cocktaildb --region eu-west-2 --platform "Docker running on 64bit Amazon Linux 2"
+          eb init CocktailDB-dev --region us-west-2 --platform "Docker running on 64bit Amazon Linux 2"
 
       - name: Deploy to Elastic Beanstalk
         run: |
