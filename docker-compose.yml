@@ -1,9 +1,9 @@
 services:
   web:
-    build: .
-    # THIS IS THE CRITICAL CHANGE:
-    # Replace the runserver command with the Gunicorn command
-    command: ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"]
+    # build: .
+    # # THIS IS THE CRITICAL CHANGE:
+    # # Replace the runserver command with the Gunicorn command
+    # command: ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"]
     # Make sure 'cocktaildb' matches your actual Django project name (the folder containing wsgi.py)
 
     volumes:
