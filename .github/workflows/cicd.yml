@@ -44,8 +44,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: CocktailAPI # <--- This should be your Elastic Beanstalk Application Name
-          environment_name: cocktail-env # <--- This should be your Elastic Beanstalk Environment Name
+          application_name: CocktailDB # <--- This should be your Elastic Beanstalk Application Name
+          environment_name: cocktail-env2 # <--- This should be your Elastic Beanstalk Environment Name
           region: us-west-2 # Use the region you've defined
           version_label: "cocktaildb-env-${{ github.sha }}-${{ steps.current-time.outputs.formattedTime }}" # Unique version label
           deployment_package: deploy.zip # The ZIP file you created earlier
