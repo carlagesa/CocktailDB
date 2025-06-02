@@ -1,20 +1,25 @@
+version: '3.6'
 services:
   web:
-    # build: .
-    # # THIS IS THE CRITICAL CHANGE:
-    # # Replace the runserver command with the Gunicorn command
-    # command: ["gunicorn", "--bind", "0.0.0.0:8000", "cocktaildb.wsgi:application"]
-    # Make sure 'cocktaildb' matches your actual Django project name (the folder containing wsgi.py)
+    build:
+      context: .
+    command: sh -c "python manage.py migrate &&
+                    gunicorn cocktaildb.wsgi:application --bind 0.0.0.0:8000" 
+    volumes: 
+      - static_volume:/home/app/code/static
+    env_file: 
+      - .env
+    image: web
+    restart: "on-failure"
+  nginx:
+    build: 
+      context: ./nginx
+    ports: 
+    - 80:80 
+    volumes:  
+      - static_volume:/home/app/code/static 
+    depends_on:
+      - web 
 
-    volumes:
-      - .:/app # This volume mount is typically for local development.
-                # For Elastic Beanstalk, the code is copied into the image,
-                # so this line might not be necessary or even desirable in production.
-                
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env # This loads local .env. For Elastic Beanstalk, environment variables
-             # should be set in the EB console (as discussed) or Dockerrun.aws.json.
-             # This line is for local development, and usually ignored by EB.
-    depends_on: [] # Correct for external RDS
+volumes:
+  static_volume:
