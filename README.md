@@ -91,7 +91,12 @@ For the data to populate the DB check my other repository built specicically for
 an excel sheet which later can be imported into the DB using one command.For more info on this, checkout the [Cocktail Scrapper](https://github.com/carlagesa/Cocktail-Scrapper.git).<br>
 Although to save on time I took the initiative to place the already populated excel sheet inside the data folder. Quickly run👇🏾
 ```bash
-  python manage.py import_cocktails
+  python manage.py populate_db_from_excel <path_to_excel_file>
+```
+
+Example:
+```bash
+  python manage.py populate_db_from_excel data/cocktail_data.xlsx
 ```
 
 ### Successfully imported cocktail data
