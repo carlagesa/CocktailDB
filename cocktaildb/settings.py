@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ['cocktail-env.eba-ph79sph7.us-west-2.elasticbeanstalk.com/','localhost','.amazonaws.com',]
+ALLOWED_HOSTS =  ['cocktail-env.eba-ph79sph7.us-west-2.elasticbeanstalk.com/','localhost','.amazonaws.com', '127.0.0.1']
 
 # Application definition
 
@@ -104,17 +104,23 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('RDS_DB_NAME'),        
-        'USER': os.environ.get('RDS_USERNAME'),
-        'PASSWORD': os.environ.get('RDS_PASSWORD'),
-        'HOST': os.environ.get('RDS_HOSTNAME'),
-        'PORT': os.environ.get('RDS_PORT', '5432'),  # <--- Use RDS_PORT, with 5432 as default
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "cocktails.db",
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('RDS_DB_NAME'),        
+#         'USER': os.environ.get('RDS_USERNAME'),
+#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
+#         'HOST': os.environ.get('RDS_HOSTNAME'),
+#         'PORT': os.environ.get('RDS_PORT', '5432'),  # <--- Use RDS_PORT, with 5432 as default
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
