@@ -21,12 +21,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$'
+# Load SECRET_KEY from environment variable. Fallback is insecure and for development ONLY.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&0u0yhr%m%sx7temeq8zuo$3h3-@f=gs5vh-$65a8njs3*qs#$')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Load DEBUG status from environment variable. Defaults to False for production safety.
+# DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 DEBUG = True
 
 ALLOWED_HOSTS =  ['cocktail-env.eba-ph79sph7.us-west-2.elasticbeanstalk.com/','localhost','.amazonaws.com', '127.0.0.1']
+# ALLOWED_HOSTS
+# Load from environment variable (comma-separated string). Fallback for development.
+ALLOWED_HOSTS_ENV = os.environ.get('DJANGO_ALLOWED_HOSTS')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
+else:
+    # Default for local development and the specific Elastic Beanstalk environment
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
 
 # Application definition
 
@@ -38,7 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # 'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
+    # 'rest_framework_simplejwt.token_blacklist', # Enable if you need token blacklisting
     'drf_yasg',
     "whitenoise.runserver_nostatic",
     'cocktails',
@@ -58,25 +71,20 @@ MIDDLEWARE = [
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ),
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.TokenAuthentication',
-    # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # Allow read-only for anonymous users, require authentication for write operations
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
      'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.UserRateThrottle',
         'rest_framework.throttling.AnonRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'user': '1000/day',  # Adjust as needed
-        'anon': '100/day',
+        'anon': '100/day', # Adjust as needed for unauthenticated users
     },
 }
 
@@ -121,6 +129,17 @@ DATABASES = {
 #         'PORT': os.environ.get('RDS_PORT', '5432'),  # <--- Use RDS_PORT, with 5432 as default
 #     }
 # }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('RDS_DB_NAME'),
+#         'USER': os.environ.get('RDS_USERNAME'),
+#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
+#         'HOST': os.environ.get('RDS_HOSTNAME'),
+#         'PORT': os.environ.get('RDS_PORT', '5432'),
+#     }
+# }
+DATABASES = { "default": { "ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "cocktails.db", } }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -156,10 +175,28 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Absolute path for collected static files
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings for production (managed by environment variables)
+# Ensure these are True in production if HTTPS is used
+SESSION_COOKIE_SECURE = os.environ.get('DJANGO_SESSION_COOKIE_SECURE', 'False').lower() == 'true'
+CSRF_COOKIE_SECURE = os.environ.get('DJANGO_CSRF_COOKIE_SECURE', 'False').lower() == 'true'
+SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() == 'true'
+
+# Optional: HSTS settings if you want to enforce HTTPS more strictly
+# SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_SECURE_HSTS_SECONDS', 0)) # e.g., 31536000 for 1 year
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', 'False').lower() == 'true'
+# SECURE_HSTS_PRELOAD = os.environ.get('DJANGO_SECURE_HSTS_PRELOAD', 'False').lower() == 'true'
+
+# Add rest_framework_simplejwt settings if needed, e.g. token lifetime
+# from datetime import timedelta
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+# }
