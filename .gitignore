@@ -8,7 +8,10 @@ venv
 /media/
 /staticfiles/
 db.sqlite3
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+
+#Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.crash/
+.terraform.lock.hcl
