@@ -1,9 +1,24 @@
+# --- Input Variable ---
+variable "image_tag" {
+  description = "Tag for the Docker image"
+  type        = string
+  default     = "latest"
+}
+
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.40.0"
     }
+  }
+
+  backend "s3" {
+    bucket = "tf-partial-backend"
+    key    = "backends/dev/statefile.tfstate"
+    region = "eu-west-2"
+    encrypt = true
+    # use_lockfile = true  # Not supported currently, use DynamoDB for state locking
   }
 }
 
@@ -92,21 +107,19 @@ resource "aws_ecs_task_definition" "my_app_task" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = jsonencode([
-    {
-      name      = "my-django-app-container"
-      image     = "${aws_ecr_repository.my_app_repo.repository_url}:${var.image_tag}"
-      cpu       = 256
-      memory    = 512
-      essential = true
-      portMappings = [
-        {
-          containerPort = 8000
-          hostPort      = 8000
-        }
-      ]
-    }
-  ])
+  container_definitions = jsonencode([{
+    name      = "my-django-app-container"
+    image     = "${aws_ecr_repository.my_app_repo.repository_url}:${var.image_tag}"
+    cpu       = 256
+    memory    = 512
+    essential = true
+    portMappings = [
+      {
+        containerPort = 8000
+        hostPort      = 8000
+      }
+    ]
+  }])
 }
 
 # --- ECS Service ---
@@ -126,15 +139,8 @@ resource "aws_ecs_service" "my_app_service" {
   depends_on = [aws_iam_role_policy_attachment.ecs_task_execution_role_policy_attachment]
 }
 
-# --- CloudWatch Logs (Optional but recommended) ---
+# --- CloudWatch Logs ---
 resource "aws_cloudwatch_log_group" "ecs_logs" {
   name              = "/ecs/my-django-app"
   retention_in_days = 7
-}
-
-# --- Input Variable ---
-variable "image_tag" {
-  description = "Tag for the Docker image"
-  type        = string
-  default     = "latest"
 }
