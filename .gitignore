@@ -9,7 +9,7 @@ venv
 /staticfiles/
 db.sqlite3
 
-#Terraform
+#Terraform files
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
