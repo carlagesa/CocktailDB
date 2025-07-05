@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&0u0yhr%m%sx7t
 # DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 DEBUG = True
 
-ALLOWED_HOSTS =  ['cocktail-env.eba-ph79sph7.us-west-2.elasticbeanstalk.com/','localhost','.amazonaws.com', '127.0.0.1']
+ALLOWED_HOSTS =  ['localhost','.amazonaws.com', '127.0.0.1']
 # ALLOWED_HOSTS
 # Load from environment variable (comma-separated string). Fallback for development.
 ALLOWED_HOSTS_ENV = os.environ.get('DJANGO_ALLOWED_HOSTS')
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'cocktaildb.middleware.HealthCheckMiddleware',
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -112,34 +113,24 @@ WSGI_APPLICATION = 'cocktaildb.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "cocktails.db",
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('RDS_DB_NAME'),        
-#         'USER': os.environ.get('RDS_USERNAME'),
-#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
-#         'HOST': os.environ.get('RDS_HOSTNAME'),
-#         'PORT': os.environ.get('RDS_PORT', '5432'),  # <--- Use RDS_PORT, with 5432 as default
-#     }
-# }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('RDS_DB_NAME'),
-#         'USER': os.environ.get('RDS_USERNAME'),
-#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
-#         'HOST': os.environ.get('RDS_HOSTNAME'),
-#         'PORT': os.environ.get('RDS_PORT', '5432'),
-#     }
-# }
-DATABASES = { "default": { "ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "cocktails.db", } }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'cocktails.db'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

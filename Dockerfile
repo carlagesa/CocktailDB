@@ -1,24 +1,30 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# pull official base image
+FROM python:3.12.0-slim-bookworm
 
-# Set environment variables
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set work directory
-WORKDIR /app
+# install psycopg2 dependencies
+RUN apt-get update \
+  && apt-get -y install gcc postgresql \
+  && apt-get clean
 
-# Install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy project
-COPY . /app/
+# Create a user with UID 1000 and GID 1000
+RUN groupadd -g 1000 appgroup && \
+    useradd -r -u 1000 -g appgroup appuser
+# Switch to this user
+USER 1000:1000
 
-# Expose port 8000
-EXPOSE 8000
+# copy project
+COPY . .
 
-# Run gunicorn
-# We'll use a placeholder for the Django project name for now
-# Replace 'myproject' with the actual name of your Django project
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+CMD ["gunicorn", "cocktaildb.wsgi:application", "--bind", "0.0.0.0:8000"]
