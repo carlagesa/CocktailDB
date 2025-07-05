@@ -29,13 +29,18 @@ variable "rds_db_name" {
   description = "RDS database name"
   default     = "mydb"
 }
+
 variable "rds_username" {
-  description = "RDS database username"
-  default     = "foo"
+  description = "RDS master username"
+  type        = string
 }
+
 variable "rds_password" {
-  description = "RDS database password"
+  description = "RDS master password"
+  type        = string
+  sensitive   = true
 }
+
 variable "rds_instance_class" {
   description = "RDS instance type"
   default     = "db.t3.micro"
