@@ -11,5 +11,5 @@ terraform {
     region         = "us-east-1"
     use_lockfile = true
   }
-  required_version = "~> 1.10"
+  required_version = "~> 1.12.2"
 }
