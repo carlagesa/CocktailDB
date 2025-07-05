@@ -17,7 +17,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1 # Replace with your desired AWS region
+        aws-region: us-east-1 # Replace if needed
 
     - name: Login to Amazon ECR
       id: login-ecr
@@ -26,33 +26,45 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: django-app # Replace with your ECR repository name
+        ECR_REPOSITORY: django-app # Replace with your repo
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      # Export image tag for later use
+      shell: bash
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.0.0 # Replace with your desired Terraform version
+        terraform_version: 1.0.0
 
     - name: Terraform Init
       run: terraform init
-      working-directory: ./terraform # Assuming Terraform files are in a 'terraform' directory
+      working-directory: ./terraform
 
     - name: Terraform Plan
-      run: terraform plan -var="image_tag=${{ env.IMAGE_TAG }}"
+      run: |
+        terraform plan \
+          -var="image_tag=${{ github.sha }}" \
+          -var="rds_password=${{ secrets.RDS_PASSWORD }}" \
+          -var="rds_username=${{ secrets.RDS_USERNAME }}" \
+          -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
+          -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}"
       working-directory: ./terraform
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TF_VAR_image_tag: ${{ env.IMAGE_TAG }} # Pass IMAGE_TAG to Terraform
 
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var="image_tag=${{ env.IMAGE_TAG }}"
+      run: |
+        terraform apply -auto-approve \
+          -var="image_tag=${{ github.sha }}" \
+          -var="rds_password=${{ secrets.RDS_PASSWORD }}" \
+          -var="rds_username=${{ secrets.RDS_USERNAME }}" \
+          -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
+          -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}"
       working-directory: ./terraform
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TF_VAR_image_tag: ${{ env.IMAGE_TAG }} # Pass IMAGE_TAG to Terraform
