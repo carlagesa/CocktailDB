@@ -66,7 +66,7 @@
     "dependsOn": [
       {
         "containerName": "django-app",
-        "condition": "START"
+        "condition": "HEALTHY"
       }
     ]
   }
