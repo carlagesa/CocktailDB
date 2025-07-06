@@ -18,9 +18,13 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('cocktails.urls')), # cocktails.urls now contains the token paths
+    path("ping/", health_check),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     # Removed redundant token paths here as they are included via 'cocktails.urls' under /api/
