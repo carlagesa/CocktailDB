@@ -11,7 +11,24 @@
         "protocol": "tcp"
       }
     ],
-    "command": ["gunicorn", "-w", "1", "-b", "0.0.0.0:8000", "cocktaildb.wsgi:application"],
+    "command": [
+      "gunicorn",
+      "-w",
+      "1",
+      "-b",
+      "0.0.0.0:8000",
+      "cocktaildb.wsgi:application"
+    ],
+    "healthCheck": {
+      "command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:8000/ping/ || exit 1"
+      ],
+      "interval": 30,
+      "timeout": 5,
+      "retries": 3,
+      "startPeriod": 10
+    },
     "environment": [
       {
         "name": "RDS_DB_NAME",
