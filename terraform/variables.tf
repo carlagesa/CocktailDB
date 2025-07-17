@@ -28,9 +28,4 @@ variable "rds_instance_class" {
   default     = "db.t3.micro"
 }
 
-variable "rds_password" {
-  description = "RDS master password"
-  type        = string
-  sensitive   = true
-}
 
