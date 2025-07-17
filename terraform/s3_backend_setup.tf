@@ -1,10 +1,15 @@
 resource "aws_s3_bucket" "terraform_state" {
-  bucket        = "cocktail-tf-state"
-  force_destroy = true
+  bucket = "cocktail-tf-state-${random_id.unique_id.hex}"
+  # force_destroy = true
   tags = {
     Name = "Terraform State Bucket"
   }
 }
+
+resource "random_id" "unique_id" {
+  byte_length = 4
+}
+
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_encryption" {
   bucket = aws_s3_bucket.terraform_state.id
