@@ -54,7 +54,7 @@ The application is deployed on a custom VPC with public and private subnets for 
 
 Below is a diagram illustrating the architecture:
 
-![AWS Architecture Diagram](docs/images/aws_architecture.jpg)
+![AWS Architecture Diagram](docs/images/aws_architecture.png)
 
 ## 🚀 Run Locally
 
