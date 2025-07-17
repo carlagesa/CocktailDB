@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "production" {
-  name       = "main"
+  name       = "main-tf"
   subnet_ids = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
 }
 

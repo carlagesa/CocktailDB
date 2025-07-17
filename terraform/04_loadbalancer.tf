@@ -44,5 +44,5 @@ resource "aws_alb_listener" "ecs-alb-http-listener" {
 
 variable "health_check_path" {
   description = "Health check path for the default target group"
-  default     = "/ping/"
+  default     = "/health_check"
 }
