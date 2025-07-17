@@ -47,7 +47,6 @@ jobs:
       run: |
         terraform plan \
           -var="image_tag=${{ github.sha }}" \
-          -var="rds_password=${{ secrets.RDS_PASSWORD }}" \
           -var="rds_username=${{ secrets.RDS_USERNAME }}" \
           -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
           -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}"
@@ -60,7 +59,6 @@ jobs:
       run: |
         terraform apply -auto-approve \
           -var="image_tag=${{ github.sha }}" \
-          -var="rds_password=${{ secrets.RDS_PASSWORD }}" \
           -var="rds_username=${{ secrets.RDS_USERNAME }}" \
           -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
           -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}"
