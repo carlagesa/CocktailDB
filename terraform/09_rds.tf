@@ -3,11 +3,25 @@ resource "aws_db_subnet_group" "production" {
   subnet_ids = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
 }
 
+resource "random_password" "rds_password" {
+  length  = 16
+  special = true
+}
+
+resource "aws_secretsmanager_secret" "rds_password" {
+  name = "${var.rds_db_name}-rds-password"
+}
+
+resource "aws_secretsmanager_secret_version" "rds_password" {
+  secret_id     = aws_secretsmanager_secret.rds_password.id
+  secret_string = random_password.rds_password.result
+}
+
 resource "aws_db_instance" "production" {
   identifier              = "production"
   db_name                 = var.rds_db_name
   username                = var.rds_username
-  password                = var.rds_password
+  password                = random_password.rds_password.result
   port                    = "5432"
   engine                  = "postgres"
   engine_version          = "17"
@@ -33,12 +47,6 @@ variable "rds_db_name" {
 variable "rds_username" {
   description = "RDS master username"
   type        = string
-}
-
-variable "rds_password" {
-  description = "RDS master password"
-  type        = string
-  sensitive   = true
 }
 
 variable "rds_instance_class" {

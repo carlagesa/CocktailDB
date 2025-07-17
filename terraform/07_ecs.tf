@@ -11,7 +11,7 @@ data "template_file" "app" {
     region                  = var.region
     rds_db_name             = var.rds_db_name
     rds_username            = var.rds_username
-    rds_password            = var.rds_password
+    rds_password_arn        = aws_secretsmanager_secret.rds_password.arn
     rds_hostname            = aws_db_instance.production.address
     nginx_conf_hash         = filesha256("../nginx/nginx.conf")
   }
@@ -51,10 +51,6 @@ resource "aws_ecs_task_definition" "django_migration" {
         {
           name  = "RDS_USERNAME",
           value = var.rds_username
-        },
-        {
-          name  = "RDS_PASSWORD",
-          value = var.rds_password
         },
         {
           name  = "RDS_HOSTNAME",

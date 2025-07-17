@@ -19,6 +19,12 @@
       "0.0.0.0:8000",
       "cocktaildb.wsgi:application"
     ],
+    "secrets": [
+     {
+       "name": "RDS_PASSWORD",
+       "valueFrom": "${rds_password_arn}"
+     }
+   ],
     "environment": [
       {
         "name": "RDS_DB_NAME",
@@ -27,10 +33,6 @@
       {
         "name": "RDS_USERNAME",
         "value": "${rds_username}"
-      },
-      {
-        "name": "RDS_PASSWORD",
-        "value": "${rds_password}"
       },
       {
         "name": "RDS_HOSTNAME",

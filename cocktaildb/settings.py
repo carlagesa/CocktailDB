@@ -29,15 +29,15 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&0u0yhr%m%sx7t
 # DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 DEBUG = True
 
-ALLOWED_HOSTS =  ['localhost','.amazonaws.com', '127.0.0.1']
-# ALLOWED_HOSTS
+ALLOWED_HOSTS = []
+
 # Load from environment variable (comma-separated string). Fallback for development.
 ALLOWED_HOSTS_ENV = os.environ.get('DJANGO_ALLOWED_HOSTS')
 if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
 else:
     # Default for local development and the specific Elastic Beanstalk environment
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'production-alb-24850384.us-east-1.elb.amazonaws.com']
 
 
 # Application definition
