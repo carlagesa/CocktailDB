@@ -1,17 +1,41 @@
-__pycache__
+# Python
+__pycache__/
 *.pyc
 *.pyo
-venv
-.env
-*.git
-/static/
-/media/
-/staticfiles/
-db.sqlite3
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
 
-#Terraform files
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Terraform
 .terraform/
-terraform.tfstate
-terraform.tfstate.backup
-.crash/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
 .terraform.lock.hcl
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-generated files
+.DS_Store
+Thumbs.db

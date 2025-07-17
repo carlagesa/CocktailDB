@@ -1,3 +1,12 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -8,4 +17,17 @@ __pycache__/
 *.egg-info/
 .eggs/
 venv/
-.git/
+
+# Terraform
+terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Documentation
+docs/
+
+# Other
+README.md
+LICENSE
+.vscode/

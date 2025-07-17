@@ -22,10 +22,15 @@ RUN apt-get update \
 RUN groupadd -g 1000 appgroup && \
     useradd -r -u 1000 -g appgroup appuser
 
+# Copy entrypoint script and make it executable
+COPY entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Switch to this user
 USER 1000:1000
 
 # copy project
 COPY . .
 
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["gunicorn", "cocktaildb.wsgi:application", "--bind", "0.0.0.0:8000"]
