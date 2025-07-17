@@ -13,6 +13,7 @@ data "template_file" "app" {
     rds_username            = var.rds_username
     rds_password            = var.rds_password
     rds_hostname            = aws_db_instance.production.address
+    nginx_conf_hash         = filesha256("../nginx/nginx.conf")
   }
 }
 

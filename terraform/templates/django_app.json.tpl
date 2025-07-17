@@ -19,16 +19,6 @@
       "0.0.0.0:8000",
       "cocktaildb.wsgi:application"
     ],
-    "healthCheck": {
-      "command": [
-        "CMD-SHELL",
-        "curl -f http://localhost:8000/ping/ || exit 1"
-      ],
-      "interval": 30,
-      "timeout": 5,
-      "retries": 3,
-      "startPeriod": 10
-    },
     "environment": [
       {
         "name": "RDS_DB_NAME",
@@ -80,10 +70,16 @@
         "awslogs-stream-prefix": "nginx-log-stream"
       }
     },
+    "environment": [
+      {
+        "name": "NGINX_CONF_HASH",
+        "value": "${nginx_conf_hash}"
+      }
+    ],
     "dependsOn": [
       {
         "containerName": "django-app",
-        "condition": "HEALTHY"
+        "condition": "START"
       }
     ]
   }
