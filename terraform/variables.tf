@@ -12,3 +12,10 @@ variable "rds_hostname" {
   description = "The hostname of the RDS instance"
   type        = string
 }
+
+variable "rds_password" {
+  description = "The RDS password"
+  type        = string
+  sensitive   = true
+  default     = "Concorde@003" # Change this to a secure password or use a secret management solution
+}
