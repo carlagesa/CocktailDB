@@ -69,3 +69,23 @@ resource "aws_security_group" "rds" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+# VPC Endpoint Security Group (traffic Fargate -> VPC Endpoint)
+resource "aws_security_group" "vpc_endpoint" {
+  name        = "vpc_endpoint_security_group"
+  description = "Allows inbound access from Fargate to the VPC endpoint"
+  vpc_id      = aws_vpc.production-vpc.id
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = "443"
+    to_port         = "443"
+    security_groups = [aws_security_group.ecs-fargate.id]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

@@ -55,24 +55,6 @@ resource "aws_route_table_association" "private-route-2-association" {
   subnet_id      = aws_subnet.private-subnet-2.id
 }
 
-# Elastic IP
-resource "aws_eip" "elastic-ip-for-nat-gw" {
-  domain                       = "vpc"
-  associate_with_private_ip = "10.0.0.5"
-  depends_on                = [aws_internet_gateway.production-igw]
-}
-
-# NAT gateway
-resource "aws_nat_gateway" "nat-gw" {
-  allocation_id = aws_eip.elastic-ip-for-nat-gw.id
-  subnet_id     = aws_subnet.public-subnet-1.id
-  depends_on    = [aws_eip.elastic-ip-for-nat-gw]
-}
-resource "aws_route" "nat-gw-route" {
-  route_table_id         = aws_route_table.private-route-table.id
-  nat_gateway_id         = aws_nat_gateway.nat-gw.id
-  destination_cidr_block = "0.0.0.0/0"
-}
 
 # Internet Gateway for the public subnet
 resource "aws_internet_gateway" "production-igw" {
@@ -108,4 +90,49 @@ variable "availability_zones" {
   description = "Availability zones"
   type        = list(string)
   default     = ["us-east-1b", "us-east-1c"]
+}
+# VPC Endpoint for Secrets Manager
+resource "aws_vpc_endpoint" "secretsmanager" {
+  vpc_id              = aws_vpc.production-vpc.id
+  service_name        = "com.amazonaws.${var.region}.secretsmanager"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  security_group_ids  = [aws_security_group.vpc_endpoint.id]
+}
+# VPC Endpoint for ECR API
+resource "aws_vpc_endpoint" "ecr_api" {
+  vpc_id              = aws_vpc.production-vpc.id
+  service_name        = "com.amazonaws.${var.region}.ecr.api"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  security_group_ids  = [aws_security_group.vpc_endpoint.id]
+}
+
+# VPC Endpoint for ECR DKR
+resource "aws_vpc_endpoint" "ecr_dkr" {
+  vpc_id              = aws_vpc.production-vpc.id
+  service_name        = "com.amazonaws.${var.region}.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  security_group_ids  = [aws_security_group.vpc_endpoint.id]
+}
+
+# VPC Endpoint for S3
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = aws_vpc.production-vpc.id
+  service_name = "com.amazonaws.${var.region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids = [aws_route_table.private-route-table.id]
+}
+# VPC Endpoint for CloudWatch Logs
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = aws_vpc.production-vpc.id
+  service_name        = "com.amazonaws.${var.region}.logs"
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  security_group_ids  = [aws_security_group.vpc_endpoint.id]
 }

@@ -88,9 +88,9 @@ resource "aws_ecs_service" "production" {
   launch_type     = "FARGATE"
   desired_count   = var.app_count
   network_configuration {
-    subnets          = [aws_subnet.public-subnet-1.id, aws_subnet.public-subnet-2.id]
+    subnets          = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
     security_groups  = [aws_security_group.ecs-fargate.id]
-    assign_public_ip = true
+    assign_public_ip = false
   }
 
   load_balancer {

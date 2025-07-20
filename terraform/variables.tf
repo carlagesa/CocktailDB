@@ -28,4 +28,8 @@ variable "rds_instance_class" {
   default     = "db.t3.micro"
 }
 
-
+variable "network_mode" {
+  description = "The network mode for the ECS service (public or private)."
+  type        = string
+  default     = "private"
+}

@@ -3,8 +3,12 @@ resource "random_password" "rds_password" {
   special = true
 }
 
+resource "random_id" "secret_suffix" {
+  byte_length = 4
+}
+
 resource "aws_secretsmanager_secret" "rds_password" {
-  name = "rds-password"
+  name = "rds-password-${random_id.secret_suffix.hex}"
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
