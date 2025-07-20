@@ -37,7 +37,7 @@ if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',')]
 else:
     # Default for local development and the specific Elastic Beanstalk environment
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'production-alb-24850384.us-east-1.elb.amazonaws.com']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'production-alb-1649758665.us-east-1.elb.amazonaws.com']
 
 
 # Application definition

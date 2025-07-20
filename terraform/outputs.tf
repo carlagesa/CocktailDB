@@ -14,3 +14,7 @@ output "subnets" {
 output "security_group" {
   value = aws_security_group.ecs-fargate.id
 }
+output "network_switch_lambda_name" {
+  description = "The name of the network switch lambda function."
+  value       = module.li10_network_switch.network_switch_lambda_name
+}
