@@ -140,30 +140,50 @@ A manual deployment involves provisioning the infrastructure with Terraform, bui
     ```
     This will provision the VPC, ECS cluster, RDS database, Application Load Balancer, and other required resources.
 
-#### Step 2: Build and Push Docker Images
+#### Step 2: Build and Push Docker Images with Make
 
-The application uses two Docker containers: one for the Django application and one for the Nginx reverse proxy.
+This project includes a `Makefile` to simplify building and pushing Docker images to Amazon ECR.
+
+**Prerequisites:**
 
 1.  **Log in to Amazon ECR:**
-    Replace `<aws_account_id>` and `<aws_region>` with your details.
+    Before you can push images, you need to authenticate Docker with your ECR registry. Replace `<aws_region>` with your AWS region.
     ```bash
     aws ecr get-login-password --region <aws_region> | docker login \
         --username AWS --password-stdin \
-        <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com
+        $(aws sts get-caller-identity --query Account --output text).dkr.ecr.<aws_region>.amazonaws.com
     ```
 
-2.  **Build and push the Django app image:**
-    From the root of the project directory:
+2.  **Update Makefile Variables (if necessary):**
+    The `Makefile` contains variables for your ECR registry, application names, and image tags. Open the `Makefile` and ensure the `ECR_REGISTRY` variable is set to your AWS Account ID and region. By default, it is set to a sample ECR path.
+
+**Build and Push Commands:**
+
+Once you are logged in, you can use the following `make` commands from the root of the project directory:
+
+-   **Build the Django image:**
     ```bash
-    docker build -t <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/django-app:latest .
-    docker push <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/django-app:latest
+    make build-django
     ```
 
-3.  **Build and push the Nginx image:**
-    The Nginx image should be built using the `nginx` directory as the build context to keep the image small and secure.
+-   **Push the Django image:**
     ```bash
-    docker build --no-cache -t <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/nginx:latest nginx
-    docker push <aws_account_id>.dkr.ecr.<aws_region>.amazonaws.com/nginx:latest
+    make push-django
+    ```
+
+-   **Build the Nginx image:**
+    ```bash
+    make build-nginx
+    ```
+
+-   **Push the Nginx image:**
+    ```bash
+    make push-nginx
+    ```
+
+-   **Build and push all images:**
+    ```bash
+    make all
     ```
 
 #### Step 3: Run Database Migrations
