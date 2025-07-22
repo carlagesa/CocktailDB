@@ -1,27 +1,26 @@
 # Stage 1: Builder
-FROM python:3.12-slim AS builder
+FROM python:3.12-alpine AS builder
 
 WORKDIR /usr/src/app
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Install build dependencies for Alpine
+RUN apk add --no-cache gcc musl-dev postgresql-dev
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 # Stage 2: Final Image
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 WORKDIR /usr/src/app
 
 # Create a non-root user
-RUN groupadd -g 1000 appgroup && \
-    useradd -r -u 1000 -g appgroup appuser
+RUN addgroup -g 1000 appgroup && \
+    adduser -D -u 1000 -G appgroup appuser
 
 # Copy installed packages from builder stage
 COPY --from=builder /usr/src/app/wheels /wheels
