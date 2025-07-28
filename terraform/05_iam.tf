@@ -42,3 +42,29 @@ resource "aws_iam_role_policy" "ecs-service-role-policy" {
   policy = file("policies/ecs-service-role-policy.json")
   role   = aws_iam_role.ecs-service-role.id
 }
+
+resource "aws_iam_role" "ecs-instance-role" {
+  name               = "ecs-instance-role-prod"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs-instance-role-attachment" {
+  role       = aws_iam_role.ecs-instance-role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs-instance-profile" {
+  name = "ecs-instance-profile-prod"
+  role = aws_iam_role.ecs-instance-role.name
+}

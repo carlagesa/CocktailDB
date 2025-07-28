@@ -59,7 +59,7 @@ resource "aws_security_group" "rds" {
     protocol        = "tcp"
     from_port       = "5432"
     to_port         = "5432"
-    security_groups = [aws_security_group.ecs-fargate.id]
+    security_groups = [aws_security_group.ecs-fargate.id, aws_security_group.ecs-ec2.id]
   }
 
   egress {
@@ -86,6 +86,28 @@ resource "aws_security_group" "vpc_endpoint" {
     protocol    = "-1"
     from_port   = 0
     to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# ECS EC2 Security group (traffic ALB -> ECS EC2 Instances)
+resource "aws_security_group" "ecs-ec2" {
+  name        = "ecs_ec2_security_group"
+  description = "Allows inbound access from the ALB only"
+  vpc_id      = aws_vpc.production-vpc.id
+
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.load-balancer.id]
+  }
+
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
