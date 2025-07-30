@@ -54,14 +54,20 @@ resource "aws_ecs_task_definition" "django_migration" {
   family             = "django-migration-task"
   network_mode       = "bridge"
   execution_role_arn = aws_iam_role.ecs-task-execution-role.arn
+  task_role_arn      = aws_iam_role.ecs-task-execution-role.arn
 
   container_definitions = jsonencode([
     {
-      name  = "django-migration-container",
-      image = var.docker_image_url_django,
-      
-      command = ["python", "manage.py", "migrate"],
-
+      name      = "django-migration-container",
+      image     = var.docker_image_url_django,
+      memory    = 512,
+      command   = ["python", "manage.py", "migrate"],
+      secrets   = [
+        {
+          name      = "RDS_PASSWORD",
+          valueFrom = aws_secretsmanager_secret.rds_password.arn
+        }
+      ],
       environment = [
         {
           name  = "RDS_DB_NAME",
