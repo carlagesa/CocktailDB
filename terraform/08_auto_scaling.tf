@@ -33,6 +33,7 @@ resource "aws_autoscaling_group" "ecs_spot" {
   desired_capacity    = 1
   max_size            = 10
   min_size            = 1
+  protect_from_scale_in = true
 
   launch_template {
     id      = aws_launch_template.ecs_spot.id
