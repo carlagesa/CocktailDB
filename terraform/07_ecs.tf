@@ -44,7 +44,7 @@ data "template_file" "app" {
 
 resource "aws_ecs_task_definition" "app" {
   family                = "django-app"
-  network_mode          = "bridge"
+  network_mode          = "awsvpc"
   execution_role_arn    = aws_iam_role.ecs-task-execution-role.arn
   task_role_arn         = aws_iam_role.ecs-task-execution-role.arn
   container_definitions = data.template_file.app.rendered
@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "app" {
 
 resource "aws_ecs_task_definition" "django_migration" {
   family             = "django-migration-task"
-  network_mode       = "bridge"
+  network_mode       = "awsvpc"
   execution_role_arn = aws_iam_role.ecs-task-execution-role.arn
   task_role_arn      = aws_iam_role.ecs-task-execution-role.arn
 
@@ -117,6 +117,11 @@ resource "aws_ecs_service" "production" {
     target_group_arn = aws_alb_target_group.default-target-group.arn
     container_name   = "nginx"
     container_port   = 80
+  }
+
+  network_configuration {
+    subnets         = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+    security_groups = [aws_security_group.ecs-fargate.id]
   }
 
   depends_on = [aws_ecs_cluster_capacity_providers.cluster_attachment]
