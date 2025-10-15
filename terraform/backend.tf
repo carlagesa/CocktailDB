@@ -9,6 +9,6 @@ terraform {
     bucket         = "cocktail-tf-state"
     key            = "production/terraform.tfstate"
     region         = "us-east-1"
-    # use_lockfile = true
+    use_lockfile = true # Enables S3 native state locking
   }
 }
