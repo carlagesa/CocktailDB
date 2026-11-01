@@ -3,8 +3,8 @@
 
 plugin "aws" {
   enabled  = true
-  version  = "0.28.0"
-  source   = "github.com/terraform-linters/tflint-aws-plugin"
+  version  = "0.50.0"
+  source   = "github.com/terraform-linters/tflint-ruleset-aws"
 }
 
 rule "terraform_required_providers" {
