@@ -3,11 +3,6 @@ resource "aws_cloudwatch_log_group" "django-log-group" {
   retention_in_days = var.log_retention_in_days
 }
 
-# logs
-
-variable "log_retention_in_days" {
-  default = 30
-}
 resource "aws_cloudwatch_log_group" "nginx-log-group" {
   name              = "/ecs/nginx"
   retention_in_days = var.log_retention_in_days

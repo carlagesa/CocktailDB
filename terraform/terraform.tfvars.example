@@ -1,0 +1,15 @@
+# Copy this file to terraform.tfvars and fill in real values.
+# Example values only — never commit secrets.
+
+region              = "us-east-1"
+image_tag           = "latest"
+rds_username        = "changeme"
+rds_hostname        = "changeme.cvocm0mas141.us-east-1.rds.amazonaws.com"
+rds_db_name         = "mydb"
+rds_instance_class  = "db.t3.micro"
+network_mode        = "private"
+ecs_cluster_name    = "production"
+app_count           = 2
+autoscale_min       = 1
+autoscale_max       = 10
+autoscale_desired   = 4

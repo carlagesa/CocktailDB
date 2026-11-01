@@ -30,6 +30,11 @@ db.sqlite3-journal
 *.tfplan
 .terraform.lock.hcl
 
+# Build artifacts
+*.zip
+cocktails.db
+cocktails.db-journal
+
 # IDEs and editors
 .vscode/
 .idea/

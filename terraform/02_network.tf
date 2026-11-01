@@ -68,29 +68,6 @@ resource "aws_route" "public-internet-igw-route" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
-# networking
-
-variable "public_subnet_1_cidr" {
-  description = "CIDR Block for Public Subnet 1"
-  default     = "10.0.1.0/24"
-}
-variable "public_subnet_2_cidr" {
-  description = "CIDR Block for Public Subnet 2"
-  default     = "10.0.2.0/24"
-}
-variable "private_subnet_1_cidr" {
-  description = "CIDR Block for Private Subnet 1"
-  default     = "10.0.3.0/24"
-}
-variable "private_subnet_2_cidr" {
-  description = "CIDR Block for Private Subnet 2"
-  default     = "10.0.4.0/24"
-}
-variable "availability_zones" {
-  description = "Availability zones"
-  type        = list(string)
-  default     = ["us-east-1b", "us-east-1c"]
-}
 # VPC Endpoint for Secrets Manager
 resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_id              = aws_vpc.production-vpc.id
@@ -122,10 +99,10 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 
 # VPC Endpoint for S3
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.production-vpc.id
-  service_name = "com.amazonaws.${var.region}.s3"
+  vpc_id            = aws_vpc.production-vpc.id
+  service_name      = "com.amazonaws.${var.region}.s3"
   vpc_endpoint_type = "Gateway"
-  route_table_ids = [aws_route_table.private-route-table.id]
+  route_table_ids   = [aws_route_table.private-route-table.id]
 }
 # VPC Endpoint for CloudWatch Logs
 resource "aws_vpc_endpoint" "logs" {
