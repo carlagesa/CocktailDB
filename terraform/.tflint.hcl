@@ -11,10 +11,6 @@ rule "terraform_required_providers" {
   enabled = true
 }
 
-rule "terraform_typed_interpolation" {
-  enabled = true
-}
-
 rule "terraform_unused_declarations" {
   enabled = true
 }
