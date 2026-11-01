@@ -7,8 +7,7 @@
 # this repository, on the `main` branch, for the production environment.
 
 data "aws_iam_openid_connect_provider" "github" {
-  url  = "https://token.actions.githubusercontent.com"
-  client_id = ["https://github.com/carlagesa/CocktailDB"]
+  url = "https://token.actions.githubusercontent.com"
 }
 
 resource "aws_iam_role" "github_actions" {
@@ -24,7 +23,7 @@ resource "aws_iam_role" "github_actions" {
         }
         Condition = {
           StringEquals = {
-            "token.actions.githubusercontent.com:aud" = "https://github.com/carlagesa/CocktailDB"
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
             "token.actions.githubusercontent.com:sub" = "repo:carlagesa/CocktailDB:ref:refs/heads/main"
           }
         }
