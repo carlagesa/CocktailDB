@@ -106,6 +106,9 @@ jobs:
         with:
           tflint_version: latest
 
+      - name: Initialize TFLint plugins
+        run: tflint --init
+
       - name: Run TFLint
         run: tflint --recursive
 
