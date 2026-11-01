@@ -1,0 +1,203 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & push images
+    runs-on: ubuntu-latest
+    environment: staging
+    outputs:
+      django: ${{ steps.images.outputs.django }}
+      nginx: ${{ steps.images.outputs.nginx }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v4
+
+      - name: Build and push Django image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/django-app:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/django-app:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Nginx image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nginx
+          file: nginx/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/nginx:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/nginx:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Output image tags
+        id: images
+        run: |
+          echo "django=${{ steps.login-ecr.outputs.registry }}/django-app:${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "nginx=${{ steps.login-ecr.outputs.registry }}/nginx:${{ github.sha }}" >> $GITHUB_OUTPUT
+
+  migrate:
+    name: Run DB migrations
+    runs-on: ubuntu-latest
+    needs: build
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: github-actions-${{ github.repository }}-${{ github.run_id }}
+          aws-region: us-east-1
+
+      - name: Run migrations as a one-off ECS task
+        run: |
+          aws ecs run-task \
+            --cluster production \
+            --task-definition django-migration-task \
+            --count 1 \
+            --launch-type EC2 \
+            --network-configuration "awsvpcConfiguration={subnets=[subnet-0a1b2c3d,subnet-0e1f2g3h],securityGroups=[sg-0a1b2c3d]}"
+
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [build, migrate]
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: github-actions-${{ github.repository }}-${{ github.run_id }}
+          aws-region: us-east-1
+
+      - name: Write container definitions
+        run: |
+          cat > container-defs.json <<'EOF'
+          [
+            {
+              "name": "django-app",
+              "image": "IMAGE_DJANGO",
+              "cpu": 10,
+              "memory": 512,
+              "essential": true,
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/django-app",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "django-app-log-stream"
+                }
+              }
+            },
+            {
+              "name": "nginx",
+              "image": "IMAGE_NGINX",
+              "cpu": 10,
+              "memory": 128,
+              "essential": true,
+              "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                  "awslogs-group": "/ecs/nginx",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "nginx-log-stream"
+                }
+              }
+            }
+          ]
+          EOF
+          sed -i "s|IMAGE_DJANGO|${{ needs.build.outputs.django }}|" container-defs.json
+          sed -i "s|IMAGE_NGINX|${{ needs.build.outputs.nginx }}|" container-defs.json
+
+      - name: Register new task definition
+        id: register
+        run: |
+          NEW_TASK_DEF=$(aws ecs register-task-definition \
+            --family django-app \
+            --container-definitions file://container-defs.json)
+          echo "$NEW_TASK_DEF" > new-task-def.json
+          TASK_REVISION=$(echo "$NEW_TASK_DEF" | jq -r '.taskDefinition.taskDefinitionArn' | awk -F: '{print $NF}')
+          echo "task_revision=$TASK_REVISION" >> $GITHUB_OUTPUT
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster production \
+            --service production \
+            --task-definition django-app:${{ steps.register.outputs.task_revision }}
+
+      - name: Wait for service stability
+        run: |
+          for i in $(seq 1 30); do
+            STATUS=$(aws ecs describe-services \
+              --cluster production \
+              --services production \
+              --query 'services[0].status' --output text)
+            RUNNING=$(aws ecs describe-services \
+              --cluster production \
+              --services production \
+              --query 'services[0].runningCount' --output text)
+            DESIRED=$(aws ecs describe-services \
+              --cluster production \
+              --services production \
+              --query 'services[0].desiredCount' --output text)
+            echo "Attempt $i: status=$STATUS running=$RUNNING desired=$DESIRED"
+            if [ "$STATUS" = "ACTIVE" ] && [ "$RUNNING" = "$DESIRED" ] && [ "$RUNNING" -gt 0 ]; then
+              echo "Service is stable."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "ERROR: Service did not reach a stable state within 5 minutes."
+          aws ecs describe-services --cluster production --services production
+          exit 1
+        timeout-minutes: 15
+
+      - name: Deployment summary
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Django image: ${{ needs.build.outputs.django }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Nginx image: ${{ needs.build.outputs.nginx }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Task revision: ${{ steps.register.outputs.task_revision }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail loudly on failure
+        if: failure()
+        run: |
+          echo "## DEPLOYMENT FAILED" >> $GITHUB_STEP_SUMMARY
+          echo "The ECS service did not reach a stable state within the timeout. Check CloudWatch logs and the ECS console." >> $GITHUB_STEP_SUMMARY
+          exit 1
