@@ -28,11 +28,11 @@ resource "aws_launch_template" "ecs_spot" {
 }
 
 resource "aws_autoscaling_group" "ecs_spot" {
-  name                = "ecs-spot-asg"
-  vpc_zone_identifier = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
-  desired_capacity    = 1
-  max_size            = 10
-  min_size            = 1
+  name                  = "ecs-spot-asg"
+  vpc_zone_identifier   = [aws_subnet.private-subnet-1.id, aws_subnet.private-subnet-2.id]
+  desired_capacity      = 1
+  max_size              = 10
+  min_size              = 1
   protect_from_scale_in = true
 
   launch_template {
@@ -71,21 +71,4 @@ resource "aws_appautoscaling_policy" "ecs_policy" {
     scale_in_cooldown  = 300
     scale_out_cooldown = 300
   }
-}
-
-# ECS service auto scaling
-
-variable "autoscale_min" {
-  description = "Minimum autoscale (number of tasks)"
-  default     = "1"
-}
-
-variable "autoscale_max" {
-  description = "Maximum autoscale (number of tasks)"
-  default     = "10"
-}
-
-variable "autoscale_desired" {
-  description = "Desired number of tasks to run initially"
-  default     = "4"
 }

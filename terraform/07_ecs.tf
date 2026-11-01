@@ -58,11 +58,11 @@ resource "aws_ecs_task_definition" "django_migration" {
 
   container_definitions = jsonencode([
     {
-      name      = "django-migration-container",
-      image     = var.docker_image_url_django,
-      memory    = 512,
-      command   = ["python", "manage.py", "migrate"],
-      secrets   = [
+      name    = "django-migration-container",
+      image   = var.docker_image_url_django,
+      memory  = 512,
+      command = ["python", "manage.py", "migrate"],
+      secrets = [
         {
           name      = "RDS_PASSWORD",
           valueFrom = aws_secretsmanager_secret.rds_password.arn
@@ -125,30 +125,6 @@ resource "aws_ecs_service" "production" {
   }
 
   depends_on = [aws_ecs_cluster_capacity_providers.cluster_attachment]
-}
-
-# ecs
-
-variable "ecs_cluster_name" {
-  description = "Name of the ECS cluster"
-  default     = "production"
-}
-
-variable "docker_image_url_django" {
-  description = "Docker image to run in the ECS cluster"
-  default     = "626690050115.dkr.ecr.us-east-1.amazonaws.com/django-app:latest"
-}
-
-# nginx
-
-variable "docker_image_url_nginx" {
-  description = "Docker image to run in the ECS cluster"
-  default     = "626690050115.dkr.ecr.us-east-1.amazonaws.com/nginx:latest"
-}
-
-variable "app_count" {
-  description = "Number of Docker containers to run"
-  default     = 2
 }
 
 
