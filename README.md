@@ -1,7 +1,7 @@
 # 🍸 CocktailDB API
-
+[![Terraform Plan](https://github.com/carlagesa/CocktailDB/actions/workflows/terraform-plan.yml/badge.svg)](https://github.com/carlagesa/CocktailDB/actions/workflows/terraform-plan.yml)
 [![Deploy status](https://img.shields.io/github/actions/workflow/status/carlagesa/CocktailDB/deploy.yml?branch=main)](https://github.com/carlagesa/CocktailDB/actions/workflows/deploy.yml)
-[![CI status](https://img.shields.io/github/actions/workflow/status/carlagesa/CocktailDB/ci.yml?branch=main&event=pull_request)](https://github.com/carlagesa/CocktailDB/actions/workflows/ci.yml)
+[![CI](https://github.com/carlagesa/CocktailDB/actions/workflows/ci.yml/badge.svg)](https://github.com/carlagesa/CocktailDB/actions/workflows/ci.yml)
 ![GitHub](https://img.shields.io/github/license/carlagesa/CocktailDB)
 
 Welcome to CocktailDB, a free, open-source API for cocktail enthusiasts and developers. This project provides a comprehensive collection of cocktail data and is built with a robust, scalable, and production-ready infrastructure on AWS.
