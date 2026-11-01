@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }} // Only run this job if AWS is configured
     name: Build & push images
     runs-on: ubuntu-latest
     environment: staging
