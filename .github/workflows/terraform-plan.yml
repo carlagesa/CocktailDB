@@ -18,6 +18,8 @@ jobs:
     name: Plan
     runs-on: ubuntu-latest
     environment: staging
+    env:
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
     defaults:
       run:
         working-directory: ./terraform
@@ -37,19 +39,19 @@ jobs:
         run: terraform validate
 
       - name: Configure AWS credentials via OIDC
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }} // Only run this step if AWS is configured
+        if: env.AWS_ROLE_TO_ASSUME != ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: github-actions-${{ github.repository }}-${{ github.run_id }}
           aws-region: us-east-1
 
       - name: Skip AWS dependent Plan since I don't have an active account, welp welp!
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }} // Only run this step if AWS is not configured
+        if: env.AWS_ROLE_TO_ASSUME == ''
         run: echo "AWS is not configured, skipping Terraform plan. This is a NON deploying CI run."
 
       - name: Terraform Plan
-        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }} // Only run plan if AWS is configured
+        if: env.AWS_ROLE_TO_ASSUME != ''
         id: plan
         run: |
           terraform plan \
