@@ -1,11 +1,23 @@
 from django.urls import path
-from .views import (
-    CocktailOnlyListView, SearchCocktailByName, ListCocktailsByFirstLetter,
-    SearchIngredientByName, LookupCocktailById, LookupIngredientById,
-    LookupRandomCocktail, FilterByIngredient, FilterByAlcoholic, FilterByCategory,
-    FilterByGlass, ListCategories, ListGlasses, ListIngredients, ListAlcoholicFilters
-)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from .views import (
+    CocktailOnlyListView,
+    FilterByAlcoholic,
+    FilterByCategory,
+    FilterByGlass,
+    FilterByIngredient,
+    ListAlcoholicFilters,
+    ListCategories,
+    ListCocktailsByFirstLetter,
+    ListGlasses,
+    ListIngredients,
+    LookupCocktailById,
+    LookupIngredientById,
+    LookupRandomCocktail,
+    SearchCocktailByName,
+    SearchIngredientByName,
+)
 
 urlpatterns = [
     path('cocktails-only/', CocktailOnlyListView.as_view(), name='cocktails-only-list'),

@@ -1,8 +1,10 @@
+import logging
+
 import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
 from cocktails.models import Cocktail, Ingredient
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,7 +17,7 @@ class Command(BaseCommand):
 
         # The API endpoint to fetch cocktails starting with a specific letter
         base_url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f="
-        
+
         # Fetch cocktails for each letter of the alphabet
         for letter in "abcdefghijklmnopqrstuvwxyz":
             self.stdout.write(f"Fetching cocktails starting with '{letter}'...")
@@ -53,7 +55,7 @@ class Command(BaseCommand):
                             if ingredient_name:
                                 ingredient, _ = Ingredient.objects.get_or_create(name=ingredient_name)
                                 cocktail.ingredients.add(ingredient)
-                        
+
                         if created:
                             logging.info(f"Created cocktail: {cocktail.name}")
 
