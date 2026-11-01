@@ -3,6 +3,8 @@ name: Terraform Plan
 on:
   pull_request:
     branches: [main, develop]
+  push:
+    branches: [main, develop]
 
 permissions:
   contents: read
@@ -23,6 +25,7 @@ jobs:
     defaults:
       run:
         working-directory: ./terraform
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,40 +42,60 @@ jobs:
         run: terraform validate
 
       - name: Configure AWS credentials via OIDC
-        if: env.AWS_ROLE_TO_ASSUME != ''
+        if: ${{ env.AWS_ROLE_TO_ASSUME != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
           role-session-name: github-actions-${{ github.repository }}-${{ github.run_id }}
           aws-region: us-east-1
 
-      - name: Skip AWS dependent Plan since I don't have an active account, welp welp!
-        if: env.AWS_ROLE_TO_ASSUME == ''
+      - name: Skip AWS dependent plan
+        if: ${{ env.AWS_ROLE_TO_ASSUME == '' }}
         run: echo "AWS is not configured, skipping Terraform plan. This is a NON deploying CI run."
 
       - name: Terraform Plan
-        if: env.AWS_ROLE_TO_ASSUME != ''
+        if: ${{ env.AWS_ROLE_TO_ASSUME != '' }}
         id: plan
         run: |
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            IMAGE_TAG="pr-${{ github.event.pull_request.number }}"
+          else
+            IMAGE_TAG="push-${{ github.run_number }}"
+          fi
+
           terraform plan \
-            -var="image_tag=pr-${{ github.event.pull_request.number }}" \
+            -var="image_tag=${IMAGE_TAG}" \
             -var="rds_username=${{ secrets.RDS_USERNAME }}" \
             -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
             -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}" \
             -no-color \
             -out=plan.tfplan
 
+      - name: Set artifact name
+        id: artifact
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            echo "name=terraform-plan-${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=terraform-plan-${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Save plan artifact
+        if: ${{ always() && hashFiles('terraform/plan.tfplan') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-${{ github.event.pull_request.number }}
+          name: ${{ steps.artifact.outputs.name }}
           path: terraform/plan.tfplan
           retention-days: 7
 
       - name: Post plan summary
         if: always()
         run: |
+          echo "## Terraform Plan Summary" >> "$GITHUB_STEP_SUMMARY"
+
           if [ -f plan.tfplan ]; then
-            echo "## Terraform Plan Summary" >> $GITHUB_STEP_SUMMARY
-            terraform plan -no-color -state-out=/dev/null plan.tfplan 2>/dev/null | tail -n 40 >> $GITHUB_STEP_SUMMARY
+            terraform plan -no-color -state-out=/dev/null plan.tfplan 2>/dev/null | tail -n 40 >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Terraform plan was skipped because AWS credentials are not configured in this repository." >> "$GITHUB_STEP_SUMMARY"
           fi
