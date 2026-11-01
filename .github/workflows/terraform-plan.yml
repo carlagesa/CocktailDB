@@ -1,0 +1,76 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    environment: staging
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.0
+
+      - name: Terraform Init
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Configure AWS credentials via OIDC
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }} // Only run this step if AWS is configured
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: github-actions-${{ github.repository }}-${{ github.run_id }}
+          aws-region: us-east-1
+
+      - name: Skip AWS dependent Plan since I don't have an active account, welp welp!
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME == '' }} // Only run this step if AWS is not configured
+        run: echo "AWS is not configured, skipping Terraform plan. This is a NON deploying CI run."
+
+      - name: Terraform Plan
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME != '' }} // Only run plan if AWS is configured
+        id: plan
+        run: |
+          terraform plan \
+            -var="image_tag=pr-${{ github.event.pull_request.number }}" \
+            -var="rds_username=${{ secrets.RDS_USERNAME }}" \
+            -var="rds_db_name=${{ secrets.RDS_DB_NAME }}" \
+            -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}" \
+            -no-color \
+            -out=plan.tfplan
+
+      - name: Save plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan-${{ github.event.pull_request.number }}
+          path: terraform/plan.tfplan
+          retention-days: 7
+
+      - name: Post plan summary
+        if: always()
+        run: |
+          if [ -f plan.tfplan ]; then
+            echo "## Terraform Plan Summary" >> $GITHUB_STEP_SUMMARY
+            terraform plan -no-color -state-out=/dev/null plan.tfplan 2>/dev/null | tail -n 40 >> $GITHUB_STEP_SUMMARY
+          fi

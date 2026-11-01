@@ -1,6 +1,7 @@
 # 🍸 CocktailDB API
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/carlagesa/CocktailDB/main.yml?branch=main)
+![Deploy status](https://img.shields.io/github/actions/workflow/status/carlagesa/CocktailDB/deploy.yml?branch=main)
+![CI status](https://img.shields.io/github/actions/workflow/status/carlagesa/CocktailDB/ci.yml?branch=main)
 ![GitHub](https://img.shields.io/github/license/carlagesa/CocktailDB)
 
 Welcome to CocktailDB, a free, open-source API for cocktail enthusiasts and developers. This project provides a comprehensive collection of cocktail data and is built with a robust, scalable, and production-ready infrastructure on AWS.
@@ -10,7 +11,7 @@ Welcome to CocktailDB, a free, open-source API for cocktail enthusiasts and deve
 - **Extensive Cocktail Data:** Access a rich database of cocktails, ingredients, and recipes.
 - **RESTful API:** A well-structured API built with Django REST Framework.
 - **Scalable Infrastructure:** Deployed on AWS with ECS for container orchestration, ensuring high availability and scalability.
-- **Automated CI/CD:** A full CI/CD pipeline for automated testing, building, and deployment.
+- **Automated CI/CD:** A full CI/CD pipeline for automated testing, building, and deployment. See [docs/ci-cd.md](docs/ci-cd.md) for details.
 - **Interactive API Documentation:** Explore the API with Swagger (OpenAPI) documentation.
 
 ## 🛠️ Tech Stack

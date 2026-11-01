@@ -10,31 +10,31 @@ resource "aws_iam_role_policy" "ecs-task-execution-role-policy" {
 }
 
 resource "aws_iam_policy" "ecs_secrets_policy" {
- name        = "ecs_secrets_policy"
- description = "Policy to allow ECS tasks to access secrets"
+  name        = "ecs_secrets_policy"
+  description = "Policy to allow ECS tasks to access secrets"
 
- policy = jsonencode({
-   Version = "2012-10-17"
-   Statement = [
-     {
-       Action = [
-         "secretsmanager:GetSecretValue",
-       ]
-       Effect   = "Allow"
-       Resource = aws_secretsmanager_secret.rds_password.arn
-     },
-   ]
- })
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "secretsmanager:GetSecretValue",
+        ]
+        Effect   = "Allow"
+        Resource = aws_secretsmanager_secret.rds_password.arn
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_secrets_attachment" {
- role       = aws_iam_role.ecs-task-execution-role.name
- policy_arn = aws_iam_policy.ecs_secrets_policy.arn
+  role       = aws_iam_role.ecs-task-execution-role.name
+  policy_arn = aws_iam_policy.ecs_secrets_policy.arn
 }
 
 resource "aws_iam_role" "ecs-service-role" {
- name               = "ecs_service_role_prod"
- assume_role_policy = file("policies/ecs-role.json")
+  name               = "ecs_service_role_prod"
+  assume_role_policy = file("policies/ecs-role.json")
 }
 
 resource "aws_iam_role_policy" "ecs-service-role-policy" {
@@ -44,7 +44,7 @@ resource "aws_iam_role_policy" "ecs-service-role-policy" {
 }
 
 resource "aws_iam_role" "ecs-instance-role" {
-  name               = "ecs-instance-role-prod"
+  name = "ecs-instance-role-prod"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
