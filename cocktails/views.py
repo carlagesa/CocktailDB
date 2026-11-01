@@ -1,9 +1,11 @@
-from rest_framework.views import APIView
+
+from rest_framework import generics, status  # Import status
 from rest_framework.response import Response
-from rest_framework import generics, status # Import status
+from rest_framework.views import APIView
+
 from .models import Cocktail, Ingredient
 from .serializers import CocktailSerializer, IngredientSerializer
-import random
+
 
 # Cocktail Views
 class CocktailOnlyListView(generics.ListAPIView):

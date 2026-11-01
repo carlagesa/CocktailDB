@@ -1,7 +1,8 @@
-import boto3
-import os
-import logging
 import json
+import logging
+import os
+
+import boto3
 
 # Configure logging
 logger = logging.getLogger()

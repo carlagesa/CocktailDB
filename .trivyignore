@@ -1,0 +1,6 @@
+# Trivy ignore list for the CocktailDB Django image.
+# Add a CVE ID and optional expiration date to suppress a known,
+# documented vulnerability. Re-evaluate each entry on release.
+
+# Example:
+# CVE-2024-12345  # Fixed in gunicorn 24.0.0, pending image rebuild

@@ -1,6 +1,7 @@
-import boto3
-import os
 import logging
+import os
+
+import boto3
 
 # Configure logging
 logger = logging.getLogger()
@@ -64,12 +65,11 @@ def delete_route_to_nat(route_table_id):
 
 def lambda_handler(event, context):
     cluster_arn = event['resources'][0]
-    private_subnet_id = os.environ['PRIVATE_SUBNET_ID']
     public_subnet_id = os.environ['PUBLIC_SUBNET_ID']
     route_table_id = os.environ['ROUTE_TABLE_ID']
 
     running_tasks_count = get_running_tasks_count(cluster_arn)
-    
+
     # Check for existing NAT Gateway
     response = ec2.describe_nat_gateways(
         Filters=[

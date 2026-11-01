@@ -2,11 +2,11 @@ resource "aws_iam_role" "nat_lambda_role" {
   name = "nat-lambda-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
-        Action    = "sts:AssumeRole",
-        Effect    = "Allow",
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -20,7 +20,7 @@ resource "aws_iam_policy" "nat_lambda_policy" {
   description = "Policy for NAT Lambda function"
 
   policy = jsonencode({
-    Version   = "2012-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
         Action = [
@@ -63,13 +63,13 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "nat_lambda" {
-  filename      = data.archive_file.lambda_zip.output_path
-  function_name = "nat-gateway-handler"
-  role          = aws_iam_role.nat_lambda_role.arn
-  handler       = "lambda_function.lambda_handler"
+  filename         = data.archive_file.lambda_zip.output_path
+  function_name    = "nat-gateway-handler"
+  role             = aws_iam_role.nat_lambda_role.arn
+  handler          = "lambda_function.lambda_handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
-  runtime       = "python3.8"
-  timeout       = 300
+  runtime          = "python3.8"
+  timeout          = 300
 
   environment {
     variables = {
@@ -85,9 +85,9 @@ resource "aws_cloudwatch_event_rule" "ecs_task_rule" {
   description = "Capture ECS task state changes"
 
   event_pattern = jsonencode({
-    source      = ["aws.ecs"],
+    source        = ["aws.ecs"],
     "detail-type" = ["ECS Task State Change"],
-    detail      = {
+    detail = {
       clusterArn = [var.ecs_cluster_arn]
     }
   })
