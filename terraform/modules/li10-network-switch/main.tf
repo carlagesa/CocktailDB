@@ -2,11 +2,11 @@ resource "aws_iam_role" "network_switch_lambda_role" {
   name = "network-switch-lambda-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
-        Action    = "sts:AssumeRole",
-        Effect    = "Allow",
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -20,7 +20,7 @@ resource "aws_iam_policy" "network_switch_lambda_policy" {
   description = "Policy for Network Switch Lambda function"
 
   policy = jsonencode({
-    Version   = "2012-10-17",
+    Version = "2012-10-17",
     Statement = [
       {
         Action = [
@@ -55,13 +55,13 @@ data "archive_file" "network_switch_lambda_zip" {
 }
 
 resource "aws_lambda_function" "network_switch_lambda" {
-  filename      = data.archive_file.network_switch_lambda_zip.output_path
-  function_name = "network-switch-handler"
-  role          = aws_iam_role.network_switch_lambda_role.arn
-  handler       = "lambda_function.lambda_handler"
+  filename         = data.archive_file.network_switch_lambda_zip.output_path
+  function_name    = "network-switch-handler"
+  role             = aws_iam_role.network_switch_lambda_role.arn
+  handler          = "lambda_function.lambda_handler"
   source_code_hash = data.archive_file.network_switch_lambda_zip.output_base64sha256
-  runtime       = "python3.8"
-  timeout       = 300
+  runtime          = "python3.8"
+  timeout          = 300
 
   environment {
     variables = {
