@@ -102,9 +102,12 @@ jobs:
         run: terraform init -backend=false
 
       - name: Run tflint
-        uses: terraform-linters/tflint-action@v4
+        uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: latest
+
+      - name: Run TFLint
+        run: tflint --recursive
 
   docker-build:
     name: Docker build
