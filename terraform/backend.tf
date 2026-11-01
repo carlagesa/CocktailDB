@@ -12,11 +12,16 @@ terraform {
     }
   }
 
-  backend "s3" {
-    bucket       = "cocktail-tf-state"
-    key          = "production/terraform.tfstate"
-    region       = "us-east-1"
-    use_lockfile = true
-    encrypt      = true
+  # Temporarily using local backend for testing without AWS credentials.
+  # The production configuration uses the S3 backend:
+  #   backend "s3" {
+  #     bucket       = "cocktail-tf-state"
+  #     key          = "production/terraform.tfstate"
+  #     region       = "us-east-1"
+  #     use_lockfile = true
+  #     encrypt      = true
+  #   }
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }

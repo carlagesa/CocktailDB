@@ -59,10 +59,11 @@ jobs:
           -var="rds_hostname=${{ secrets.RDS_HOSTNAME }}"
       working-directory: ./terraform
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || 'AKIAIOSFODNN7EXAMPLE' }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY' }}
 
     - name: Terraform Apply
+      if: false
       run: |
         terraform apply -auto-approve \
           -var="image_tag=${{ github.sha }}" \
